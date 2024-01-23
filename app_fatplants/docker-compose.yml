@@ -1,0 +1,15 @@
+version: '3'
+
+services:
+  backend_fatplants:
+    build: .
+    restart: always
+    network_mode: "host"
+    volumes:
+      - container_volume:/app
+    ports:
+      - 5000:5000
+
+volumes:
+  container_volume:
+    external: true

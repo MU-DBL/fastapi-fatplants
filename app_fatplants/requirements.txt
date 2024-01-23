@@ -1,0 +1,14 @@
+aiomysql
+cryptography
+databases==0.7.0
+fastapi==0.91.0
+lxml
+mysql-connector-python==8.0.32
+openai
+opencv-python
+Pillow
+pydantic==1.10.4
+PyMySQL==1.0.2
+requests
+sqlalchemy 
+uvicorn==0.20.0
