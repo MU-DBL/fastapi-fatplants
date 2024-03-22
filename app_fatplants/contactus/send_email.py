@@ -1,5 +1,5 @@
 from typing import List
-from fastapi import FastAPI, UploadFile, File, Request
+from fastapi import FastAPI, UploadFile, File, Request, APIRouter
 from fastapi.middleware.cors import CORSMiddleware
 from Google import Create_Service
 from email.mime.multipart import MIMEMultipart
@@ -48,7 +48,7 @@ async def send_email(request: Request, attachments: List[UploadFile] = File(defa
     """
     
     mimeMessage = MIMEMultipart()
-    mimeMessage['to'] = 'srvmannava@gmail.com' 
+    mimeMessage['to'] = 'fatplantsmu@gmail.com' 
     mimeMessage['From'] = 'FatPlants MU <fatplantsmu@gmail.com>'
     mimeMessage['subject'] = email_subject
     mimeMessage.attach(MIMEText(emailMsg, 'html'))
