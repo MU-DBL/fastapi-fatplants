@@ -15,14 +15,14 @@ from db.database import database_conn_obj
 
 async def get_fpids_index(species: str, expression: str):
     expression=expression.lower()
-    exp='%{e}%'.format(e=expression)
-    species=species.lower()
-    query1='select fatplant_id from '+species+'_index where identifier like \''+exp+'\';'
-    res1= await database_conn_obj.fetch_all(query1)
+    exp = f'%{expression}%'
+    species = f'{species.lower()}_index'
+    query1 = f'select fatplant_id from {species} where identifier like :exp;'
+    res1= await database_conn_obj.fetch_all(query1, values={"exp": exp})
     res=[i[0] for i in res1]
     row_headers=['identifier','fatplant_id','type']
-
     return res
+
 async def get_species_records_identifier(species: str,fp_list: List[str]):
     species=species.lower()
     query1 = 'select * from '+species+'_identifier where fatplant_id in ({fpl});'
