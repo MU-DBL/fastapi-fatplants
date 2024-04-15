@@ -25,7 +25,7 @@
 
 `sudo docker build -f Dockerfile.dev -t fastapi_fatplants .`
 <!-- In case you want to develop rapidly and check USE volumes in below command (-v) thats mounted on to docker container, Else remove "-v container_volume:/app" from below command -->
-`sudo docker run -p 5004:5004 -v container_volume:/app --network=host fastapi_fatplants`
+`sudo docker run -p 5004:5004 --network=host fastapi_fatplants`
 
 # Renew domain name
 `Renew the domain name in No-IP site every month, as it requires confirmation every month for free tier account`
