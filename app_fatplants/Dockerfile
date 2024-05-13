@@ -11,6 +11,7 @@ RUN pip install --no-cache-dir --upgrade -r /app/requirements.txt
 
 # Set environment variables
 ENV place=docker
+ENV CORS_ALLOW_ORIGINS="https://fatplants.net"
 
 COPY . /app
 

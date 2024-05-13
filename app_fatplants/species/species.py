@@ -1,5 +1,6 @@
 from fastapi import APIRouter
 from db import crud
+from db.helper import *
 
 router = APIRouter(
     tags=["species"],
@@ -9,6 +10,8 @@ router = APIRouter(
 
 @router.get('/get_species_records/')
 async def get_Species_Records(species: str,expression: str):
+    if is_sql_injection(expression) or is_sql_injection(species):
+        return {"Error": "Invalid input values"}
     fpid_list= await crud.get_fpids_index(species,expression)
     
     if len(fpid_list) > 0:

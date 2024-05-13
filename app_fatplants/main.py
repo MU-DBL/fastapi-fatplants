@@ -6,6 +6,7 @@ from db import models,database,schemas,crud
 from db.database import database_conn_obj
 
 from router_imports import routers
+import os
 
 # models.Base.metadata.create_all(bind=engine)  #Creating db session engine
 
@@ -26,9 +27,12 @@ async def startup():
 async def shutdown():
     await database_conn_obj.disconnect()
 
+# environment specific origins taken from environment variable
+allow_origins = os.environ.get("CORS_ALLOW_ORIGINS", "*")
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[allow_origins],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
