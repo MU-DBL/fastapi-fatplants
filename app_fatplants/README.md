@@ -19,13 +19,13 @@
 `docker build -t fastapi_fatplants.v1 .`
 `docker run -d -p 5000:5000 --name fatplants_backend --network=host fastapi_fatplants.v1`
 <!-- If you want to mount ssl certificates folder automatically mount the folder onto docker -->
-`docker run -d -v ssl_volume:/app/auth_docker -p 5000:5000 --name fatplants_backend --network=host fastapi_fatplants.v1`
+`docker run -d -v ssl_volume:/app/auth_docker -v blast_db_volumn:/app/blast_db -p 5000:5000 --name fatplants_backend --network=host fastapi_fatplants.v1`
 
 # For dev:
 
 `sudo docker build -f Dockerfile.dev -t fastapi_fatplants .`
 <!-- In case you want to develop rapidly and check USE volumes in below command (-v) thats mounted on to docker container, Else remove "-v container_volume:/app" from below command -->
-`sudo docker run -p 5004:5004 --network=host fastapi_fatplants`
+`sudo docker run -v blast_db_volumn:/app/blast_db -p 5004:5004 --network=host fastapi_fatplants`
 
 # Renew domain name
 `Renew the domain name in No-IP site every month, as it requires confirmation every month for free tier account`
