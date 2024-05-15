@@ -26,16 +26,17 @@ async def getResult(database: str, sequence: str, parameters: str):
             result = file.read()
 
         os.remove(input_file)
-        os.remove(output_file)
+        os.remove(output_file)   
+        return result   
     except subprocess.CalledProcessError as e:
+        os.remove(input_file)
+        os.remove(output_file)
         return f'Error: {e.output}', 500
-    
-    return result   
 
 def getDatabasePath(database: str):
-    soybean_path = "/app/blast_db/Soyabean.fasta"
-    arabidopsis_path = "/app/blast_db/Arabidopsis.fasta"
-    camelina_path = "/app/blast_db/Camelina.fasta"
+    soybean_path = "/app/blast_db/soybean.fasta"
+    arabidopsis_path = "/app/blast_db/arabidopsis.fasta"
+    camelina_path = "/app/blast_db/camelina.fasta"
     if database:
         switcher = {
             "soyabean": soybean_path,

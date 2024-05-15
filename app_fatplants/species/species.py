@@ -57,5 +57,9 @@ async def search_By_Sequence(species: str, sequence: str):
 
 @router.get('/blast/')
 async def blast(database: str, sequence: str, parameters: str):
-    res=await blastp.getResult(database, sequence, parameters)
-    return res
+    if database.isalpha() or sequence.isalpha():
+        res=await blastp.getResult(database, sequence, parameters)
+        return res
+    else:
+        return {"Error": "Invalid input values"}
+   

@@ -9,6 +9,10 @@ COPY requirements.txt /app/requirements.txt
 RUN apt-get update && apt-get install -y python3-opencv
 RUN pip install --no-cache-dir --upgrade -r /app/requirements.txt
 
+# Install BLAST packages
+RUN apt-get update && apt-get install -y ncbi-blast+
+ENV PATH="/usr/bin/blast:${PATH}"
+
 # Set environment variables
 ENV place=docker
 ENV CORS_ALLOW_ORIGINS="https://fatplants.net"
