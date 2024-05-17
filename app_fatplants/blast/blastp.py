@@ -39,7 +39,7 @@ def getDatabasePath(database: str):
     camelina_path = "/app/blast_db/camelina.fasta"
     if database:
         switcher = {
-            "soyabean": soybean_path,
+            "soybean": soybean_path,
             "arabidopsis": arabidopsis_path,
             "camelina": camelina_path
         }
