@@ -1,6 +1,7 @@
 from fastapi import APIRouter
 from db import crud
 from db.helper import *
+from blast import blastp
 
 router = APIRouter(
     tags=["species"],
@@ -53,3 +54,12 @@ async def get_Homologs_For_Uniprot_ID(uniprot_id: str):
 async def search_By_Sequence(species: str, sequence: str):
     res=await crud.sequence_search(species, sequence)
     return res
+
+@router.get('/blast/')
+async def blast(database: str, sequence: str, parameters: str):
+    if database.isalpha() or sequence.isalpha():
+        res=await blastp.getResult(database, sequence, parameters)
+        return res
+    else:
+        return {"Error": "Invalid input values"}
+   
