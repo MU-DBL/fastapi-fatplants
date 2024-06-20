@@ -13,6 +13,11 @@ router = APIRouter(
 async def get_Species_Records(species: str,expression: str):
     if is_sql_injection(expression) or is_sql_injection(species):
         return {"Error": "Invalid input values"}
+    
+    if species=='cuphea' or species=='pennycress':
+        result= await crud.get_species_details_records(species, expression)
+        return result
+
     fpid_list= await crud.get_fpids_index(species,expression)
     
     if len(fpid_list) > 0:
@@ -59,6 +64,14 @@ async def search_By_Sequence(species: str, sequence: str):
 async def blast(database: str, sequence: str, parameters: str):
     if database.isalpha() or sequence.isalpha():
         res=await blastp.getResult(database, sequence, parameters)
+        return res
+    else:
+        return {"Error": "Invalid input values"}
+   
+@router.get('/PSI_blast/')
+async def PSI_blast(database: str, sequence: str, parameters: str):
+    if database.isalpha() or sequence.isalpha():
+        res=await blastp.getPSIBlastResult(database, sequence, parameters)
         return res
     else:
         return {"Error": "Invalid input values"}

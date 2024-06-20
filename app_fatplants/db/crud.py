@@ -13,6 +13,20 @@ from db.database import database_conn_obj
 #     elif species=='soya':
 #         return db.query(models.Soya_Index).filter(models.Soya_Index.identifier.like(exp)).all()
 
+async def get_species_details_records(species: str, expression: str):
+    species=species.lower()
+    exp = f'%{expression}%'
+    query1 = 'select * from '+species+'_details where description like :exp;'
+    res1= await database_conn_obj.fetch_all(query1, values={"exp": exp})
+
+    row_headers=['fp_id','description','sequence']
+
+    json_data = []
+    for result in res1:
+        json_data.append(dict(zip(row_headers, result)))
+
+    return json_data
+
 async def get_fpids_index(species: str, expression: str):
     expression=expression.lower()
     exp = f'%{expression}%'
@@ -70,7 +84,10 @@ async def get_data_by_tair(species: str, tair: str):
 
 async def load_sample_data(species: str):
     species=species.lower()
-    if species != 'fatty_acid':
+    if species=='cuphea' or species=='pennycress':
+        query='select * from '+species+'_details order by fp_id limit 30;'
+    
+    elif species=='lmpd' or species=='camelina'or species=='soya':
         query='select * from '+species+'_identifier order by fp_id limit 30;'
     else:
         query='select * from fatty_acid order by fp_id limit 30;'
