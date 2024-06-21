@@ -124,7 +124,13 @@ async def get_keggid(species:str, uniprot_id:str):
         json_data.append(dict(zip(row_headers, result)))
     return json_data
 
-
+#by Sam, for phase out Firestore
+async def get_species_mapper(speciesName: str, q: str):
+    speciesName=speciesName.lower()
+    q=q.upper()
+    query='select * from species_mapper where '+speciesName+' = \''+q+'\';'
+    res = await database_conn_obj.fetch_all(query)
+    return res
 
 
 
