@@ -79,7 +79,7 @@ async def PSI_blast(database: str, sequence: str, parameters: str):
 #by Sam, for phase out Firestore
 @router.get('/species_mapper/')
 async def get_species_mapper(speciesName: str, q: str):
-    if speciesName != "arabidopsis" and speciesName != "camelina" and speciesName != "soya":
+    if speciesName != "arabidopsis" and speciesName != "camelina" and speciesName != "glymine_max":
         raise HTTPException(status_code=500, detail="Invalid speciesName")
     if is_sql_injection(speciesName) or is_sql_injection(q):
         raise HTTPException(status_code=500, detail="Invalid input values")
