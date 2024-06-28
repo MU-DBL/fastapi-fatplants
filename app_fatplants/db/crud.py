@@ -16,10 +16,10 @@ from db.database import database_conn_obj
 async def get_species_details_records(species: str, expression: str):
     species=species.lower()
     exp = f'%{expression}%'
-    query1 = 'select * from '+species+'_details where description like :exp;'
+    query1 = 'select fp_id, description, is_longest, sequence from '+species+'_details where description like :exp;'
     res1= await database_conn_obj.fetch_all(query1, values={"exp": exp})
 
-    row_headers=['fp_id','description','sequence']
+    row_headers=['fp_id','description','is_longest','sequence']
 
     json_data = []
     for result in res1:
