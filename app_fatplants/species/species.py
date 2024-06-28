@@ -85,4 +85,28 @@ async def get_species_mapper(speciesName: str, q: str):
         raise HTTPException(status_code=500, detail="Invalid input values")
     res=await crud.get_species_mapper(speciesName, q)
     return res
+
+@router.get('/customized_pathways/')
+async def get_customized_pathways():
+    res=await crud.get_customized_pathways()
+    return res
+
+@router.get('/pathway_areas/')
+async def get_pathway_areas(pathway_id: int):
+    res=await crud.get_pathway_areas(pathway_id)
+    return res
+
+@router.get('/pathway_img_path/')
+async def get_pathway_img_path(pathway_id: int):
+    res=await crud.get_pathway_img_path(pathway_id)
+    return res
+
+@router.get('/details_uniprotid/')
+async def get_Details_By_UNIPROTID(species: str, id: str):
+    if species != "soya" and species != "camelina" and species != "lmpd":
+        raise HTTPException(status_code=500, detail="Invalid speciesName")
+    if is_sql_injection(species) or is_sql_injection(id):
+        raise HTTPException(status_code=500, detail="Invalid input values")
+    res=await crud.get_details_by_uniprotid(species, id)
+    return res
    

@@ -132,6 +132,27 @@ async def get_species_mapper(speciesName: str, q: str):
     res = await database_conn_obj.fetch_all(query)
     return res
 
+async def get_customized_pathways():
+    query='SELECT * FROM customized_pathways;'
+    res = await database_conn_obj.fetch_all(query)
+    return res
+
+async def get_pathway_areas(pathway_id: int):
+    query='SELECT * FROM pathway_areas WHERE pathway_id = '+str(pathway_id)+';'
+    res = await database_conn_obj.fetch_all(query)
+    return res
+
+async def get_pathway_img_path(pathway_id: int):
+    query='SELECT img_path FROM customized_pathways WHERE pathway_id = '+str(pathway_id)+';'
+    res = await database_conn_obj.fetch_all(query)
+    return res
+
+async def get_details_by_uniprotid(species: str, uniprot_id: str):
+    species=species.lower()
+    query='select * from '+species+'_details where uniprot_id = \''+uniprot_id+'\';'
+    res = await database_conn_obj.fetch_all(query)
+    return res
+
 
 
 
