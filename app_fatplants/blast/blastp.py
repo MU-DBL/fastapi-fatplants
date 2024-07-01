@@ -3,9 +3,9 @@ from datetime import datetime
 import os
 
 def getDatabasePath(database: str):
-    soybean_path = "/app/blast_db/soybean.fasta"
-    arabidopsis_path = "/app/blast_db/arabidopsis.fasta"
-    camelina_path = "/app/blast_db/camelina.fasta"
+    soybean_path = "/app/fatplants_volume/blast_db/soybean.fasta"
+    arabidopsis_path = "/app/fatplants_volume/blast_db/arabidopsis.fasta"
+    camelina_path = "/app/fatplants_volume/blast_db/camelina.fasta"
     if database:
         switcher = {
             "soybean": soybean_path,
