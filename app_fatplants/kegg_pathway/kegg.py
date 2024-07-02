@@ -35,8 +35,10 @@ async def get_pathway_ids(species:str, uniprot_id:str):
     pathway_content = requests.get(pathway_url).text
     p=pathway_content.split('\n')[:-1]
     res=[]
-    for x in p:
-        res.append(x.split('\t')[1])
+    #If rest.kegg.jp returns no result, "pathway_content" will only contain a '\n' and cause error. Sam
+    if len(pathway_content)>1:
+        for x in p:
+            res.append(x.split('\t')[1])
     output={'pathway_ids':res}
     return output
 
