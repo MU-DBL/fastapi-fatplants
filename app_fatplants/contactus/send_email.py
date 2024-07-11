@@ -1,10 +1,9 @@
 from typing import List
-from fastapi import FastAPI, UploadFile, File, Request, APIRouter
+from fastapi import UploadFile, File, Request, APIRouter
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.mime.application import MIMEApplication
-import json 
 from auth.credentials import gmail_api_credentials
 
 router = APIRouter(
@@ -24,7 +23,7 @@ async def send_email(request: Request, attachments: List[UploadFile] = File(defa
     try:
         server = smtplib.SMTP('smtp.gmail.com', 587)
         server.starttls()
-        server.login(from_addr, password)  # Use your actual email and password here
+        server.login(from_addr, password) 
         data = await request.form()
         firstName = data.get('firstName')
         lastName = data.get('lastName')
