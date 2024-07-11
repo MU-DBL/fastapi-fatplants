@@ -5,6 +5,7 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.mime.application import MIMEApplication
 import json 
+from auth.credentials import gmail_api_credentials
 
 router = APIRouter(
     tags=["contactus"],
@@ -12,10 +13,8 @@ router = APIRouter(
 )
 
 try:
-    with open('auth/smtp_credentials.json', 'r') as file:
-        credentials = json.load(file)
-    from_addr = credentials['email']
-    password = credentials['appPassword']
+    from_addr = gmail_api_credentials['email']
+    password = gmail_api_credentials['appPassword']
 
 except Exception as e:
     print('Unable to read credentials', e)
