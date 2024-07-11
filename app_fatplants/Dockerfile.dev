@@ -19,6 +19,5 @@ ENV place=docker
 COPY . /app
 
 EXPOSE 5004
-EXPOSE 8080
 
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "5004","--ssl-certfile","auth_docker/fullchain.pem","--ssl-keyfile","auth_docker/privkey.pem"]
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "5004"]
