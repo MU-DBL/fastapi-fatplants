@@ -153,6 +153,27 @@ async def get_details_by_uniprotid(species: str, uniprot_id: str):
     res = await database_conn_obj.fetch_all(query)
     return res
 
+#By Sam, for logging IP and counting visitors
+async def count_and_log_visitor(info: str):
+    with open('record.txt', 'a') as file:
+        file.write(info + '\n')
+
+    """
+    print("current record.txt:")
+    with open('record.txt', 'r') as file:
+        # Read all the contents of the file
+        contents = file.read()
+        # Print the contents to the console
+        print(contents)
+    """
+
+    query='SELECT count FROM visitor WHERE id = 0;'
+    res = await database_conn_obj.fetch_all(query)
+    result=str(res[0][0]+1)
+    query2='UPDATE visitor SET count = \''+result+'\' WHERE id = \'0\';'
+    await database_conn_obj.execute(query2)
+    return result
+
 
 
 
