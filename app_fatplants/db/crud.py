@@ -155,23 +155,16 @@ async def get_details_by_uniprotid(species: str, uniprot_id: str):
 
 #By Sam, for logging IP and counting visitors
 async def count_and_log_visitor(info: str):
-    with open('record.txt', 'a') as file:
-        file.write(info + '\n')
-
-    """
-    print("current record.txt:")
-    with open('record.txt', 'r') as file:
-        # Read all the contents of the file
-        contents = file.read()
-        # Print the contents to the console
-        print(contents)
-    """
-
     query='SELECT count FROM visitor WHERE id = 0;'
     res = await database_conn_obj.fetch_all(query)
     result=str(res[0][0]+1)
     query2='UPDATE visitor SET count = \''+result+'\' WHERE id = \'0\';'
     await database_conn_obj.execute(query2)
+
+    year_month_str = f"{datetime.now().month:02d}{datetime.now().year % 100:02d}"
+    with open('fatplants_volume//counter_log//record'+year_month_str+'.txt', 'a') as file:
+        file.write(result+' '+info + '\n')
+    
     return result
 
 
