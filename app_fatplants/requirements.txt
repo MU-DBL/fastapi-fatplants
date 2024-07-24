@@ -12,3 +12,4 @@ PyMySQL==1.0.2
 requests
 sqlalchemy 
 uvicorn==0.20.0
+python-multipart

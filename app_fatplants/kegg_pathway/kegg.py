@@ -15,7 +15,7 @@ router = APIRouter(
     responses={404: {"description": "Error in calling kegg pathway API"}},
 )
 
-@router.get('/pathways/')
+@router.get('/api/pathways/')
 async def get_pathway_ids(species:str, uniprot_id:str):
     mapping_res= await crud.get_keggid(species,uniprot_id)
     if len(mapping_res)<1:
@@ -46,7 +46,7 @@ async def get_pathway_ids(species:str, uniprot_id:str):
     output={'pathway_ids':res}
     return output
 
-@router.get('/highlighted_image/')
+@router.get('/api/highlighted_image/')
 async def get_highlighted_pathwayimage(pathway_id: str, uniprot_id: str, species:str):
     mapping_res= await crud.get_keggid(species,uniprot_id)
     if len(mapping_res)<1:
@@ -118,7 +118,7 @@ async def get_highlighted_pathwayimage(pathway_id: str, uniprot_id: str, species
         img_byte_result=r.read()
     return Response(content=img_byte_result, media_type="image/png")
 
-@router.get('/getcoordinates/')
+@router.get('/api/getcoordinates/')
 async def get_coordinates(pathway_id:str):
     conf_url=f"http://rest.kegg.jp/get/{pathway_id}/conf"
     conf_content=requests.get(conf_url).text
