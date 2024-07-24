@@ -2,6 +2,7 @@
 from typing import List
 from db.schemas import *
 from db.database import database_conn_obj
+from datetime import datetime
 
 # def get_fpids_index(db:Session, species, expression):
 #     exp='%{e}%'.format(e=expression)
@@ -152,6 +153,20 @@ async def get_details_by_uniprotid(species: str, uniprot_id: str):
     query='select * from '+species+'_details where uniprot_id = \''+uniprot_id+'\';'
     res = await database_conn_obj.fetch_all(query)
     return res
+
+#By Sam, for logging IP and counting visitors
+async def count_and_log_visitor(info: str):
+    query='SELECT count FROM visitor WHERE id = 0;'
+    res = await database_conn_obj.fetch_all(query)
+    result=str(res[0][0]+1)
+    query2='UPDATE visitor SET count = \''+result+'\' WHERE id = \'0\';'
+    await database_conn_obj.execute(query2)
+
+    year_month_str = f"{datetime.now().month:02d}{datetime.now().year % 100:02d}"
+    with open('fatplants_volume//counter_log//record'+year_month_str+'.txt', 'a') as file:
+        file.write(result+' '+info + '\n')
+    
+    return result
 
 
 

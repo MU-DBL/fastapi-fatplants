@@ -109,4 +109,11 @@ async def get_Details_By_UNIPROTID(species: str, id: str):
         raise HTTPException(status_code=500, detail="Invalid input values")
     res=await crud.get_details_by_uniprotid(species, id)
     return res
-   
+
+#counting visitors and log their IP address etc.
+@router.get('/visit/')
+async def count_and_log_visitor(info: str):
+    if is_sql_injection(info):
+        raise HTTPException(status_code=500, detail="Invalid input values")
+    res=await crud.count_and_log_visitor(info)
+    return res
