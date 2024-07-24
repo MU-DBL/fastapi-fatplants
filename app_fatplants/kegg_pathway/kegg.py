@@ -1,4 +1,4 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 from fastapi.responses import Response
 from db import crud
 
@@ -19,20 +19,26 @@ router = APIRouter(
 async def get_pathway_ids(species:str, uniprot_id:str):
     mapping_res= await crud.get_keggid(species,uniprot_id)
     if len(mapping_res)<1:
-        return "No Uniprot ID in database table for this species"
+        #return "No Uniprot ID in database table for this species"
+        raise HTTPException(status_code=400, detail="No Uniprot ID in database table for this species")
     kegg_ids=[]
     for r in mapping_res:
         if r['kegg_id'] is not None:
             kegg_ids.append(r['kegg_id'])  
         else:
-            return "Null kegg_id is mapped for given uniprot_id"
+            #return "Null kegg_id is mapped for given uniprot_id"
+            raise HTTPException(status_code=400, detail="Null kegg_id is mapped for given uniprot_id")
     if len(kegg_ids)>1:
-        return "More than 1 kegg_ids found for given uniprot id. Give functionality to select specific keggid"
+        #return "More than 1 kegg_ids found for given uniprot id. Give functionality to select specific keggid"
+        raise HTTPException(status_code=400, detail="More than 1 kegg_ids found for given uniprot id")
 
     kegg_id=kegg_ids[0]
 
     pathway_url=f"http://rest.kegg.jp/link/pathway/{kegg_id}"
     pathway_content = requests.get(pathway_url).text
+    #If rest.kegg.jp returns no result, "pathway_content" will only contain a '\n' and cause error. Sam
+    if len(pathway_content)<=1:
+        raise HTTPException(status_code=400, detail="No pathway found in rest.kegg.jp")
     p=pathway_content.split('\n')[:-1]
     res=[]
     for x in p:
