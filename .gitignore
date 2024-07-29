@@ -1,3 +1,6 @@
 /app_fatplants/auth_docker
 /app_fatplants/blast_db
 /app_fatplants/config.yaml
+/app_fatplants/docker-compose.yml
+/app_fatplants/Dockerfile.dev
+/app_fatplants/Dockerfile
