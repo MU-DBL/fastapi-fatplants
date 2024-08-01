@@ -111,7 +111,7 @@ async def sequence_search(species: str, sequence: str):
 
 # implemented separately from lmpd/camelina/soya
 async def fatty_acid_search(query: str):
-    query='select * from fatty_acid where SOFAID like \'%'+query+'%\' or delta_notation like \'%'+query+'%\' or Name like \'%'+query+'%\' or other_names like \'%'+query+'%\' or formula like \'%'+query+'%\' limit 30;'
+    query='select * from fatty_acid where SOFAID like \'%'+query+'%\' or delta_notation like \'%'+query+'%\' or Name like \'%'+query+'%\' or other_names like \'%'+query+'%\' or formula like \'%'+query+'%\';'
     res = await database_conn_obj.fetch_all(query)
     return res 
 
