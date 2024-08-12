@@ -17,7 +17,7 @@ def getDatabasePath(database: str):
         return 'Error: database is null'
     
 async def getPSIBlastResult(database: str, sequence: str, parameters: str):
-    file_path = '/app/temp/'
+    file_path = '/app/'
 
     current_time = datetime.now()
     time_str = current_time.strftime("%Y-%m-%d_%H-%M-%S")
@@ -47,7 +47,7 @@ async def getPSIBlastResult(database: str, sequence: str, parameters: str):
         return f'Error: {e.output}', 500
 
 async def getResult(database: str, sequence: str, parameters: str):
-    file_path = '/app/temp/'
+    file_path = '/app/'
 
     current_time = datetime.now()
     time_str = current_time.strftime("%Y-%m-%d_%H-%M-%S")
