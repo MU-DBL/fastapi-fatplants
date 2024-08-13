@@ -4,13 +4,15 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-if os.getenv("place") == "docker":
-    path = "/app/fatplants_volume/"
+if os.getenv("place") == 'docker'and os.getenv("APP_ENV") == 'prod':
+    path = "/app/fatplants_volume/config.yaml"
+elif os.getenv("place") == 'docker':
+    path = "/app/fatplants_volume/config-dev.yaml"
 else:
-    raise ValueError('Environment variable "place" is not set to "docker".')
+     raise ValueError('Environment variable "place" is not set to "docker".')
 
 try:
-    with open(path + "config.yaml") as file:
+    with open(path) as file:
         yaml_file = yaml.load(file, Loader=yaml.FullLoader)
         db = yaml_file["database"]
         open_api=yaml_file["open-api"]
