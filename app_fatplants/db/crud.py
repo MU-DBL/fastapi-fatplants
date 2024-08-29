@@ -154,7 +154,7 @@ async def get_details_by_uniprotid(species: str, uniprot_id: str):
     res = await database_conn_obj.fetch_all(query)
     return res
 
-#By Sam, for logging IP and counting visitors
+#for logging IP and counting visitors
 async def count_and_log_visitor(info: str):
     query='SELECT count FROM visitor WHERE id = 0;'
     res = await database_conn_obj.fetch_all(query)

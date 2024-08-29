@@ -10,7 +10,7 @@ router = APIRouter(
 csv_entity_table_file_path = '/app/fatplants_volume/fileCyt/GO_AllLists.csv'
 csv_file_path1 = '/app/fatplants_volume/fileCyt/network.csv'
 
-@router.get("/godata")
+@router.get("/api/godata")
 async def godata(request: Request):
     identifier = request.query_params.get('identifier')
     ifsearch = identifier is not None
