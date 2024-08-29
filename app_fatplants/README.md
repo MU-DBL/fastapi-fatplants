@@ -19,7 +19,7 @@
 `docker build -t fastapi_fatplants.v1 .`
 `docker run -d -p 5000:5000 --name fatplants_backend --network=host fastapi_fatplants.v1`
 <!-- If you want to mount ssl certificates folder automatically mount the folder onto docker -->
-`docker run -d -v ssl_volume:/app/auth_docker -v fatplants_volume:/app/fatplants_volume -p 5000:5000 --name fatplants_backend --network=host fastapi_fatplants.v1`
+`docker run -d -v fatplants_volume:/app/fatplants_volume -p 5000:5000 --network=host fastapi_fatplants.v1`
 
 # For dev:
 

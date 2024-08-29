@@ -22,4 +22,4 @@ COPY . /app
 
 EXPOSE 5000
 
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "5000","--ssl-certfile","auth_docker/fullchain.pem","--ssl-keyfile","auth_docker/privkey.pem"]
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "5000"]
