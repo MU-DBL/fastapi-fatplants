@@ -168,8 +168,66 @@ async def count_and_log_visitor(info: str):
     
     return result
 
+async def submit_record(record: ArabidopsisRecord):
+    subcellular_location = record.subcellular_location_listed or record.subcellular_location_filled
+    evidence_for_function = record.evidence_for_function_listed or record.evidence_for_function_filled
 
+    query = """
+    INSERT INTO ArabidopsisFormRecords (
+        submitter_name, submitter_affiliation, submitter_email_address,
+        record_type, record_url, figure_url, pathway,
+        protein_family_name_common, protein_family_abbreviation_common,
+        isoform_gene_name, isoform_gene_abbreviation, gene_locus, ec_number,
+        subcellular_location, mutant_name, evidence_for_function,
+        specific_comments_on_locus, other_comments,
+        reference_1, pubmed_link_1, reference_2, pubmed_link_2,
+        reference_3, pubmed_link_3
+    )  VALUES (
+        :submitter_name, :submitter_affiliation, :submitter_email_address,
+        :record_type, :record_url, :figure_url, :pathway,
+        :protein_family_name_common, :protein_family_abbreviation_common,
+        :isoform_gene_name, :isoform_gene_abbreviation, :gene_locus, :ec_number,
+        :subcellular_location, :mutant_name, :evidence_for_function,
+        :specific_comments_on_locus, :other_comments,
+        :reference_1, :pubmed_link_1, :reference_2, :pubmed_link_2,
+        :reference_3, :pubmed_link_3
+    )
+    """
 
+    values = {
+        "submitter_name": record.name,
+        "submitter_affiliation": record.affiliation,
+        "submitter_email_address": record.email_address,
+        "record_type": record.record_type,
+        "record_url": record.record_url,
+        "figure_url": record.figure_url,
+        "pathway": record.pathway,
+        "protein_family_name_common": record.protein_family_name_common,
+        "protein_family_abbreviation_common": record.protein_family_abbreviation_common,
+        "isoform_gene_name": record.isoform_gene_name,
+        "isoform_gene_abbreviation": record.isoform_gene_abbreviation,
+        "gene_locus": record.gene_locus,
+        "ec_number": record.ec_number,
+        "subcellular_location": subcellular_location,
+        "mutant_name": record.mutant_name,
+        "evidence_for_function": evidence_for_function,
+        "specific_comments_on_locus": record.specific_comments_on_locus,
+        "other_comments": record.other_comments,
+        "reference_1": record.reference_1,
+        "pubmed_link_1": record.pubmed_link_1,
+        "reference_2": record.reference_2,
+        "pubmed_link_2": record.pubmed_link_2,
+        "reference_3": record.reference_3,
+        "pubmed_link_3": record.pubmed_link_3
+    }
+    
+    await database_conn_obj.execute(query=query, values=values)
+
+async def fetch_records():
+    query = "SELECT * FROM ArabidopsisFormRecords"
+    records = await database_conn_obj.fetch_all(query)
+    
+    return records
 
 
 
