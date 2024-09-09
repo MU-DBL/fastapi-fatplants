@@ -3,6 +3,7 @@ from typing import List
 from db.schemas import *
 from db.database import database_conn_obj
 from datetime import datetime
+import os
 
 # def get_fpids_index(db:Session, species, expression):
 #     exp='%{e}%'.format(e=expression)
@@ -163,7 +164,7 @@ async def count_and_log_visitor(info: str):
     await database_conn_obj.execute(query2)
 
     year_month_str = f"{datetime.now().month:02d}{datetime.now().year % 100:02d}"
-    with open('fatplants_volume//counter_log//record'+year_month_str+'.txt', 'a') as file:
+    with open('fatplants_volume//counter_log//record_'+os.getenv('APP_ENV')+'_'+year_month_str+'.txt', 'a') as file:
         file.write(result+' '+info + '\n')
     
     return result
@@ -228,10 +229,6 @@ async def fetch_records():
     records = await database_conn_obj.fetch_all(query)
     
     return records
-
-
-
-
 
 
 # def get_species_records_identifier(db:Session,species,expression,fp_list):
