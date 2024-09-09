@@ -15,6 +15,7 @@ ENV PATH="/usr/bin/blast:${PATH}"
 
 # Set environment variables
 ENV place=docker
+ENV APP_ENV=dev
 
 COPY . /app
 
