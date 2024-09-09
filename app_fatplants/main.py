@@ -8,7 +8,13 @@ from db.database import database_conn_obj
 from router_imports import routers
 import os
 
+import logging
+from logging_config import setup_logging
+
 # models.Base.metadata.create_all(bind=engine)  #Creating db session engine
+
+# Configure logging
+setup_logging()
 
 app = FastAPI(
     title="FastAPI",
@@ -21,10 +27,12 @@ sleep_time = 10
 
 @app.on_event("startup")
 async def startup():
+    logging.info("fatplants_app is starting up...")
     await database_conn_obj.connect()
 
 @app.on_event("shutdown")
 async def shutdown():
+    logging.info("fatplants_app is shutting down...")
     await database_conn_obj.disconnect()
 
 # environment specific origins taken from environment variable
