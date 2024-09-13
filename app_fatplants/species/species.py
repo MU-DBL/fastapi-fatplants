@@ -118,7 +118,7 @@ async def count_and_log_visitor(info: str):
     res=await crud.count_and_log_visitor(info)
     return res
 
-@router.get('/enzyme_search/')
+@router.get('/api/enzyme_search/')
 async def search_Enzyme(query: str):
     res=await crud.enzyme_search(query)
     return res
