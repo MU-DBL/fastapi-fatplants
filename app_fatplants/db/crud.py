@@ -239,3 +239,9 @@ async def fetch_records():
 #         return db.query(models.Camelina_Identifier).filter(models.Camelina_Identifier.fatplant_id.in(fp_list)).all()
 #     elif species=='soya':
 #         return db.query(models.Soya_Identifier).filter(models.Soya_Identifier.fatplant_id.in(fp_list)).all()
+
+#Aralip datas
+async def enzyme_search(query: str):
+    query='SELECT pathways.path, pathways.name AS path_name, enzymes.id , enzymes.name, enzymes.abbreviation, enzymecomments.comments FROM enzymes LEFT JOIN enzymeenzymecomments ON enzymes.id = enzymeenzymecomments.enzyme_id LEFT JOIN enzymecomments ON enzymeenzymecomments.enzymecomment_id = enzymecomments.id JOIN enzymes_pathways ON enzymes.id = enzymes_pathways.enzyme_id LEFT JOIN pathways ON enzymes_pathways.pathway_id = pathways.id where pathways.name like \'%'+query+'%\' or enzymes.name like \'%'+query+'%\' or enzymes.abbreviation like \'%'+query+'%\' or enzymecomments.comments like \'%'+query+'%\';'
+    res = await database_conn_obj.fetch_all(query)
+    return res 
