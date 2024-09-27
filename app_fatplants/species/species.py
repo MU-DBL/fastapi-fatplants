@@ -122,3 +122,8 @@ async def count_and_log_visitor(info: str):
 async def search_Enzyme(query: str):
     res=await crud.enzyme_search(query)
     return res
+
+@router.get('/api/enzyme_pathway/')
+async def pathway_Enzyme(id: str):
+    res=await crud.enzyme_pathway(id)
+    return res
