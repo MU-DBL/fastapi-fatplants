@@ -10,8 +10,7 @@ router = APIRouter(
 
 router = APIRouter()
 
-# Since it does not need to be live right now, commenting out apis
-#@router.post("/api/submitform/") 
+@router.post("/api/submitform/") 
 async def submit_record_api(record: ArabidopsisRecord):
     try:
         await submit_record(record)
@@ -19,7 +18,7 @@ async def submit_record_api(record: ArabidopsisRecord):
     except Exception as e:
         return {"message": str(e)}
 
-# Since it does not need to be live right now, commenting out apis
+# Since it does not need to be live right now, commenting out api
 #@router.get("/api/fetchformrecords/")
 async def fetch_records_api():
     try:
