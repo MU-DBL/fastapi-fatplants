@@ -127,3 +127,8 @@ async def search_Enzyme(query: str):
 async def pathway_Enzyme(id: str):
     res=await crud.enzyme_pathway(id)
     return res
+
+@router.get('/api/enzyme_for_locus/')
+async def locus_Enzyme(locus_id: int):
+    res=await crud.enzyme_search_by_locus(locus_id)
+    return res

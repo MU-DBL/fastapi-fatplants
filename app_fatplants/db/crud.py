@@ -250,3 +250,9 @@ async def enzyme_pathway(id: str):
     query='SELECT name,path,legend,abbreviation FROM pathways WHERE id=\''+id+'\';'
     res = await database_conn_obj.fetch_all(query)
     return res 
+
+async def enzyme_search_by_locus(locus_id: int):
+    query='select enzyme_id from enzymes_locations where location_id =\''+str(locus_id)+'\';'
+    res = await database_conn_obj.fetch_all(query)
+    return res 
+
