@@ -250,3 +250,40 @@ async def enzyme_pathway(id: str):
     query='SELECT name,path,legend,abbreviation FROM pathways WHERE id=\''+id+'\';'
     res = await database_conn_obj.fetch_all(query)
     return res 
+
+async def enzyme_search_by_locus(locus_id: int):
+    query='select enzyme_id from enzymes_locations where location_id =\''+str(locus_id)+'\';'
+    res = await database_conn_obj.fetch_all(query)
+    return res 
+
+async def locisummary_locations():
+    query = "SELECT id, name FROM locations"
+    result = await database_conn_obj.fetch_all(query)
+    return result
+
+async def locisummary_abbreviations():
+    query = """
+        SELECT li.location_id, i.abbreviation
+        FROM isoformabbs i
+        JOIN locusisoformabbs li ON i.id = li.isoformabb_id
+    """
+    result = await database_conn_obj.fetch_all(query)
+    return result
+
+async def locisummary_activities():
+    query = """
+        SELECT inl.location_id, iname.name
+        FROM isoformnames iname
+        JOIN isoformnames_locations inl ON iname.id = inl.isoformname_id
+    """
+    result = await database_conn_obj.fetch_all(query)
+    return result
+
+async def locisummary_pathways():
+    query = """
+        SELECT lp.location_id, p.id, p.nameabbreviation
+        FROM pathways p
+        JOIN locations_pathways lp ON p.id = lp.pathway_id
+    """
+    result = await database_conn_obj.fetch_all(query)
+    return result

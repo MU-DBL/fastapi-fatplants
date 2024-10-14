@@ -127,3 +127,39 @@ async def search_Enzyme(query: str):
 async def pathway_Enzyme(id: str):
     res=await crud.enzyme_pathway(id)
     return res
+
+@router.get('/api/enzyme_for_locus/')
+async def locus_Enzyme(locus_id: int):
+    res=await crud.enzyme_search_by_locus(locus_id)
+    return res
+
+@router.get("/api/locations_summary")
+async def get_location_summary():
+    locations = await crud.locisummary_locations()
+    abbreviations = await crud.locisummary_abbreviations()
+    activities = await crud.locisummary_activities()
+    pathways = await crud.locisummary_pathways()
+
+    location_summary_map = {location["id"]: {"location_id": location["id"], "location_name": location["name"], "abbreviations": [], "activities": [], "pathways": []} for location in locations}
+
+    for abbreviation in abbreviations:
+        loc_id = abbreviation["location_id"]
+        if loc_id in location_summary_map:
+            location_summary_map[loc_id]["abbreviations"].append(abbreviation["abbreviation"])
+
+    for activity in activities:
+        loc_id = activity["location_id"]
+        if loc_id in location_summary_map:
+            location_summary_map[loc_id]["activities"].append(activity["name"])
+
+    for pathway in pathways:
+        loc_id = pathway["location_id"]
+        if loc_id in location_summary_map:
+            location_summary_map[loc_id]["pathways"].append({
+                "id": pathway["id"],
+                "nameabbreviation": pathway["nameabbreviation"]
+            })
+
+    location_summaries = list(location_summary_map.values())
+
+    return location_summaries
