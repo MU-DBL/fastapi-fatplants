@@ -120,11 +120,15 @@ async def count_and_log_visitor(info: str):
 
 @router.get('/api/enzyme_search/')
 async def search_Enzyme(query: str):
+    if is_sql_injection(query):
+        raise HTTPException(status_code=500, detail="Invalid input values")
     res=await crud.enzyme_search(query)
     return res
 
 @router.get('/api/enzyme_pathway/')
 async def pathway_Enzyme(id: str):
+    if is_sql_injection(id):
+        raise HTTPException(status_code=500, detail="Invalid input values")
     res=await crud.enzyme_pathway(id)
     return res
 
@@ -163,3 +167,38 @@ async def get_location_summary():
     location_summaries = list(location_summary_map.values())
 
     return location_summaries
+
+@router.get('/api/aralip_pathway/')
+async def pathway_Aralip(id: str):
+    if is_sql_injection(id):
+        raise HTTPException(status_code=500, detail="Invalid input values")
+    res=await crud.aralip_pathway(id)
+    return res
+
+@router.get('/api/enzyme/get_enzyme_name/')
+async def name_Enzyme(id: str):
+    if is_sql_injection(id):
+        raise HTTPException(status_code=500, detail="Invalid input values")
+    res=await crud.get_enzyme_name(id)
+    return res
+
+@router.get('/api/enzyme/get_enzyme_reactions/')
+async def reaction_Enzyme(enzyme_id: str):
+    if is_sql_injection(enzyme_id):
+        raise HTTPException(status_code=500, detail="Invalid input values")
+    res=await crud.get_enzyme_reactions(enzyme_id)
+    return res
+
+@router.get('/api/enzyme/get_enzyme_pathways/')
+async def pathway_Enzyme(enzyme_id: str):
+    if is_sql_injection(enzyme_id):
+        raise HTTPException(status_code=500, detail="Invalid input values")
+    res=await crud.get_enzyme_pathways(enzyme_id)
+    return res
+
+@router.get('/api/enzyme/get_enzyme_locus/')
+async def locus_enzyme(enzyme_id: str):
+    if is_sql_injection(enzyme_id):
+        raise HTTPException(status_code=500, detail="Invalid input values")
+    res=await crud.get_enzyme_locus(enzyme_id)
+    return res

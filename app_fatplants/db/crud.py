@@ -242,12 +242,12 @@ async def fetch_records():
 
 #Aralip datas
 async def enzyme_search(query: str):
-    query='SELECT pathways.path, pathways.name AS path_name, enzymes.id , enzymes.name, enzymes.abbreviation, enzymecomments.comments FROM enzymes LEFT JOIN enzymeenzymecomments ON enzymes.id = enzymeenzymecomments.enzyme_id LEFT JOIN enzymecomments ON enzymeenzymecomments.enzymecomment_id = enzymecomments.id JOIN enzymes_pathways ON enzymes.id = enzymes_pathways.enzyme_id LEFT JOIN pathways ON enzymes_pathways.pathway_id = pathways.id where pathways.name like \'%'+query+'%\' or enzymes.name like \'%'+query+'%\' or enzymes.abbreviation like \'%'+query+'%\' or enzymecomments.comments like \'%'+query+'%\';'
+    query='SELECT pathways.path, pathways.id AS path_id, pathways.name AS path_name, enzymes.id , enzymes.name, enzymes.abbreviation, enzymecomments.comments FROM enzymes LEFT JOIN enzymeenzymecomments ON enzymes.id = enzymeenzymecomments.enzyme_id LEFT JOIN enzymecomments ON enzymeenzymecomments.enzymecomment_id = enzymecomments.id JOIN enzymes_pathways ON enzymes.id = enzymes_pathways.enzyme_id LEFT JOIN pathways ON enzymes_pathways.pathway_id = pathways.id where pathways.name like \'%'+query+'%\' or enzymes.name like \'%'+query+'%\' or enzymes.abbreviation like \'%'+query+'%\' or enzymecomments.comments like \'%'+query+'%\';'
     res = await database_conn_obj.fetch_all(query)
     return res 
     
 async def enzyme_pathway(id: str):
-    query='SELECT name,path,legend,abbreviation FROM pathways WHERE id=\''+id+'\';'
+    query='SELECT name,path,legend,abbreviation,GROUP_CONCAT(CONCAT(firstName, " ", lastName) SEPARATOR ", ") AS contributor FROM pathways LEFT JOIN contributors_pathways ON pathways.id = contributors_pathways.pathway_id LEFT JOIN contributors ON contributors_pathways.contributor_id = contributors.id WHERE pathways.id= \''+id+'\' GROUP BY name, path,legend,abbreviation;'
     res = await database_conn_obj.fetch_all(query)
     return res 
 
@@ -287,3 +287,37 @@ async def locisummary_pathways():
     """
     result = await database_conn_obj.fetch_all(query)
     return result
+
+async def get_enzyme_name(id: str):
+    query='SELECT * FROM enzymes WHERE id = \''+id+'\';'
+    res = await database_conn_obj.fetch_all(query)
+    return res
+
+async def get_enzyme_reactions(enzyme_id: str):
+    query='SELECT reactions.id, enzymes_reactions.enzyme_id, reactiontype, enzymetype, hehos.name AS heho_name, hehos.id AS heho_id, s1, s2, p1, p2, comment, domain, enzymes.name AS enzyme_name FROM enzymes_reactions LEFT JOIN reactions ON enzymes_reactions.reaction_id = reactions.id LEFT JOIN hehoenzymes ON enzymes_reactions.enzyme_id = hehoenzymes.enzyme_id LEFT JOIN hehos ON hehoenzymes.heho_id = hehos.id LEFT JOIN reactionreactiontypes ON reactions.id = reactionreactiontypes.reaction_id LEFT JOIN reactiontypes ON reactionreactiontypes.reactiontype_id = reactiontypes.id LEFT JOIN ecnumbers_reactions ON reactions.id = ecnumbers_reactions.reaction_id LEFT JOIN ecnumbers ON ecnumbers_reactions.ecnumber_id = ecnumbers.id LEFT JOIN hehodomains ON reactions.id = hehodomains.reaction_id LEFT JOIN enzymes ON enzymes_reactions.enzyme_id = enzymes.id WHERE enzymes_reactions.enzyme_id=\''+enzyme_id+'\';'
+    res = await database_conn_obj.fetch_all(query)
+    json_data = []
+    row_headers=['id','enzyme_id','reactiontype','enzymetype','heho_name','heho_id','s1','s2','p1','p2','comment','domain','enzyme_name','ecnumber']
+    for r in res:
+        query2="SELECT ecnumber FROM ecnumbers_reactions LEFT JOIN ecnumbers ON ecnumbers.id = ecnumbers_reactions.ecnumber_id WHERE reaction_id=\'"+str(r.id)+"\';"
+        res2=await database_conn_obj.fetch_all(query2)
+        json_data.append(dict(zip(row_headers,[r.id, r.enzyme_id, r.reactiontype, r.enzymetype, r.heho_name, r.heho_id, r.s1, r.s2, r.p1, r.p2, r.comment, r.domain, r.enzyme_name, res2])))
+    return json_data
+
+async def get_enzyme_pathways(enzyme_id: str):
+    query='SELECT pathway_id, name, nameabbreviation FROM enzymes_pathways LEFT JOIN pathways ON enzymes_pathways.pathway_id = pathways.id WHERE enzyme_id = \''+enzyme_id+'\';'
+    res = await database_conn_obj.fetch_all(query)
+    return res
+
+async def get_enzyme_locus(enzyme_id:str):
+    query="SELECT locations.id AS location_id, locations.name AS locus_id, isoformabbs.abbreviation AS abbrev, mutants.name AS mutant, gene_identification_method, description_mutant_phenotype, isoformnames.name AS gene, organelles.subcellularlocation AS subcelles, evidenceforfunctions.evidenceforfunction AS evidence, locuscomments.comments AS comments, brem1, brem2, brem3, brem4, caen1, caen2, caen3, caen4, caem, euen1, euen2, euen3, euen4, euem, naem1, naem2, naem3, naem4 FROM enzymes_locations LEFT JOIN locations ON enzymes_locations.location_id = locations.id LEFT JOIN locusisoformabbs ON locusisoformabbs.location_id = locations.id LEFT JOIN isoformabbs ON isoformabbs.id = locusisoformabbs.isoformabb_id LEFT JOIN mutants ON mutants.location_id = locations.id LEFT JOIN isoformnames_locations ON isoformnames_locations.location_id = locations.id LEFT JOIN isoformnames ON isoformnames.id = isoformnames_locations.isoformname_id LEFT JOIN locusorganelles ON locusorganelles.location_id = locations.id LEFT JOIN organelles ON organelles.id = locusorganelles.organelle_id LEFT JOIN locusevidenceforfunctions ON locusevidenceforfunctions.location_id = locations.id LEFT JOIN evidenceforfunctions ON locusevidenceforfunctions.evidenceforfunction_id = evidenceforfunctions.id LEFT JOIN locationlocuscomments ON locationlocuscomments.location_id = locations.id LEFT JOIN locuscomments ON locuscomments.id = locationlocuscomments.locuscomment_id LEFT JOIN brassicas ON locations.id = brassicas.location_id LEFT JOIN castors ON locations.id = castors.location_id LEFT JOIN euonymus ON locations.id = euonymus.location_id LEFT JOIN nasturtia ON locations.id = nasturtia.location_id WHERE enzymes_locations.enzyme_id = \'"+enzyme_id+"\';"
+    res=await database_conn_obj.fetch_all(query)
+    json_data = []
+    row_headers=['locus_id','abbrev','mutant', 'gene_identification_method', 'description_mutant_phenotype','gene','subcelles','evidence','comments', 'brem1', 'brem2', 'brem3', 'brem4', 'caen1', 'caen2', 'caen3', 'caen4', 'caem', 'euen1', 'euen2', 'euen3', 'euen4', 'euem', 'naem1', 'naem2', 'naem3', 'naem4','pathways','references']
+    for r in res:
+        query2="SELECT name, pathway_id, nameabbreviation FROM locations_pathways LEFT JOIN pathways ON locations_pathways.pathway_id = pathways.id WHERE locations_pathways.location_id = \'"+str(r.location_id)+"\';"
+        res2=await database_conn_obj.fetch_all(query2)
+        query3="SELECT alias, ref FROM locations_refs LEFT JOIN refs ON refs.id = locations_refs.ref_id WHERE locations_refs.location_id = \'"+str(r.location_id)+"\' ORDER BY Sort DESC;"
+        res3=await database_conn_obj.fetch_all(query3)
+        json_data.append(dict(zip(row_headers, [r.locus_id, r.abbrev, r.mutant, r.gene_identification_method, r.description_mutant_phenotype, r.gene, r.subcelles, r.evidence,r.comments, r.brem1, r.brem2, r.brem3, r.brem4, r.caen1, r.caen2, r.caen3, r.caen4, r.caem, r.euen1, r.euen2, r.euen3, r.euen4, r.euem, r.naem1, r.naem2, r.naem3, r.naem4 ,res2, res3])))
+    return json_data
