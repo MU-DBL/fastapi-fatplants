@@ -247,7 +247,7 @@ async def enzyme_search(query: str):
     return res 
     
 async def enzyme_pathway(id: str):
-    query='SELECT name,path,legend,abbreviation,GROUP_CONCAT(CONCAT(firstName, " ", lastName) SEPARATOR ", ") AS contributor FROM pathways LEFT JOIN contributors_pathways ON pathways.id = contributors_pathways.pathway_id LEFT JOIN contributors ON contributors_pathways.contributor_id = contributors.id WHERE pathways.id= \''+id+'\' GROUP BY name, path,legend,abbreviation;'
+    query='SELECT name,path,legend,abbreviation,tabLink,tabTitle,GROUP_CONCAT(CONCAT(firstName, " ", lastName) SEPARATOR ", ") AS contributor FROM pathways LEFT JOIN contributors_pathways ON pathways.id = contributors_pathways.pathway_id LEFT JOIN contributors ON contributors_pathways.contributor_id = contributors.id WHERE pathways.id= \''+id+'\' GROUP BY name, path,legend,abbreviation,tabLink,tabTitle;'
     res = await database_conn_obj.fetch_all(query)
     return res 
 

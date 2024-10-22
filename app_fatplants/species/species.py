@@ -120,7 +120,7 @@ async def count_and_log_visitor(info: str):
 
 @router.get('/api/enzyme_search/')
 async def search_Enzyme(query: str):
-    if is_sql_injection(query):
+    if is_sql_injection(query, True):
         raise HTTPException(status_code=500, detail="Invalid input values")
     res=await crud.enzyme_search(query)
     return res
