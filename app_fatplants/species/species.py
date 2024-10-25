@@ -176,10 +176,10 @@ async def pathway_Aralip(id: str):
     return res
 
 @router.get('/api/enzyme/get_enzyme_name/')
-async def name_Enzyme(id: str):
-    if is_sql_injection(id):
+async def name_Enzyme(enzyme_id: str):
+    if is_sql_injection(enzyme_id):
         raise HTTPException(status_code=500, detail="Invalid input values")
-    res=await crud.get_enzyme_name(id)
+    res=await crud.get_enzyme_name(enzyme_id)
     return res
 
 @router.get('/api/enzyme/get_enzyme_reactions/')
@@ -197,8 +197,36 @@ async def pathway_Enzyme(enzyme_id: str):
     return res
 
 @router.get('/api/enzyme/get_enzyme_locus/')
-async def locus_enzyme(enzyme_id: str):
+async def locus_Enzyme(enzyme_id: str):
     if is_sql_injection(enzyme_id):
         raise HTTPException(status_code=500, detail="Invalid input values")
     res=await crud.get_enzyme_locus(enzyme_id)
+    return res
+
+@router.get('/api/enzyme/get_heho_name/')
+async def name_Heho(heho_id: str):
+    if is_sql_injection(heho_id):
+        raise HTTPException(status_code=500, detail="Invalid input values")
+    res=await crud.get_heho_name(heho_id)
+    return res
+
+@router.get('/api/enzyme/get_heho_reactions/')
+async def reaction_Heho(heho_id: str):
+    if is_sql_injection(heho_id):
+        raise HTTPException(status_code=500, detail="Invalid input values")
+    res=await crud.get_heho_reactions(heho_id)
+    return res
+
+@router.get('/api/enzyme/get_heho_pathways/')
+async def pathway_Heho(heho_id: str):
+    if is_sql_injection(heho_id):
+        raise HTTPException(status_code=500, detail="Invalid input values")
+    res=await crud.get_heho_pathways(heho_id)
+    return res
+
+@router.get('/api/enzyme/get_heho_locus/')
+async def locus_Heho(heho_id: str):
+    if is_sql_injection(heho_id):
+        raise HTTPException(status_code=500, detail="Invalid input values")
+    res=await crud.get_heho_locus(heho_id)
     return res
