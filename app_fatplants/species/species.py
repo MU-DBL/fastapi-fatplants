@@ -139,33 +139,52 @@ async def locus_Enzyme(locus_id: int):
 
 @router.get("/api/locations_summary")
 async def get_location_summary():
-    locations = await crud.locisummary_locations()
-    abbreviations = await crud.locisummary_abbreviations()
-    activities = await crud.locisummary_activities()
-    pathways = await crud.locisummary_pathways()
+    location_data = await crud.get_location_summary()
+    
+    location_summary_map = {}
 
-    location_summary_map = {location["id"]: {"location_id": location["id"], "location_name": location["name"], "abbreviations": [], "activities": [], "pathways": []} for location in locations}
+    for row in location_data:
+        loc_name = row["location_name"]
+        if loc_name not in location_summary_map:
+            location_summary_map[loc_name] = {
+                "location_id": row["location_id"],
+                "location_name": loc_name,
+                "activities": set(),
+                "abbreviations": set(),
+                "pathways": set()
+            }
+        
+        if row["enzyme_name"]:
+            location_summary_map[loc_name]["activities"].add(row["enzyme_name"])
+        
+        if row["abbreviation"]:
+            location_summary_map[loc_name]["abbreviations"].add(row["abbreviation"])
+        
+        if row["nameabbreviation"] != "Unknown":
+            location_summary_map[loc_name]["pathways"].add((
+                row["pathway_id"],
+                row["nameabbreviation"],
+                row["path"]
+            ))
 
-    for abbreviation in abbreviations:
-        loc_id = abbreviation["location_id"]
-        if loc_id in location_summary_map:
-            location_summary_map[loc_id]["abbreviations"].append(abbreviation["abbreviation"])
-
-    for activity in activities:
-        loc_id = activity["location_id"]
-        if loc_id in location_summary_map:
-            location_summary_map[loc_id]["activities"].append(activity["name"])
-
-    for pathway in pathways:
-        loc_id = pathway["location_id"]
-        if loc_id in location_summary_map:
-            location_summary_map[loc_id]["pathways"].append({
-                "id": pathway["id"],
-                "nameabbreviation": pathway["nameabbreviation"]
-            })
-
-    location_summaries = list(location_summary_map.values())
-
+    location_summaries = []
+    for loc_name, loc_data in location_summary_map.items():
+        location_summaries.append({
+            "location_id": loc_data["location_id"],
+            "location_name": loc_data["location_name"],
+            "activities": sorted(list(loc_data["activities"])),
+            "abbreviations": sorted(list(loc_data["abbreviations"])),
+            "pathways": sorted([
+                {
+                    "id": p[0],
+                    "nameabbreviation": p[1],
+                    "path": p[2]
+                } for p in loc_data["pathways"]
+            ], key=lambda x: x["nameabbreviation"])
+        })
+    
+    location_summaries.sort(key=lambda x: x["location_name"])
+    
     return location_summaries
 
 @router.get('/api/aralip_pathway/')
