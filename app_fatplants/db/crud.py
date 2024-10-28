@@ -256,34 +256,25 @@ async def enzyme_search_by_locus(locus_id: int):
     res = await database_conn_obj.fetch_all(query)
     return res 
 
-async def locisummary_locations():
-    query = "SELECT id, name FROM locations"
-    result = await database_conn_obj.fetch_all(query)
-    return result
-
-async def locisummary_abbreviations():
+async def get_location_summary():
     query = """
-        SELECT li.location_id, i.abbreviation
-        FROM isoformabbs i
-        JOIN locusisoformabbs li ON i.id = li.isoformabb_id
-    """
-    result = await database_conn_obj.fetch_all(query)
-    return result
-
-async def locisummary_activities():
-    query = """
-        SELECT inl.location_id, iname.name
-        FROM isoformnames iname
-        JOIN isoformnames_locations inl ON iname.id = inl.isoformname_id
-    """
-    result = await database_conn_obj.fetch_all(query)
-    return result
-
-async def locisummary_pathways():
-    query = """
-        SELECT lp.location_id, p.id, p.nameabbreviation
-        FROM pathways p
-        JOIN locations_pathways lp ON p.id = lp.pathway_id
+        SELECT DISTINCT 
+            l.id as location_id,
+            l.name as location_name,
+            e.id AS enzyme_id,
+            e.name AS enzyme_name,
+            i.abbreviation,
+            p.id as pathway_id,
+            p.nameabbreviation,
+            p.path,
+            p.name as pathway_name
+        FROM locations l
+        JOIN enzymes_locations el ON l.id = el.location_id
+        JOIN enzymes e ON e.id = el.enzyme_id
+        JOIN enzymes_pathways ep ON e.id = ep.enzyme_id
+        JOIN pathways p ON p.id = ep.pathway_id
+        LEFT OUTER JOIN locusisoformabbs lia ON lia.location_id = l.id
+        LEFT OUTER JOIN isoformabbs i ON i.id = lia.isoformabb_id
     """
     result = await database_conn_obj.fetch_all(query)
     return result
