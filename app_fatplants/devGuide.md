@@ -12,7 +12,7 @@ Following the steps if you are running Windows:
 
 4. Go to "fastapi-fatplants\app_fatplants", create a folder called "fatplants_volume".(make sure it’s included in the ".gitignore" file)
 
-5. Paste your config file "config.yaml" that containing your confidential credentials in "fatplants_volume".
+5. Paste your config file "config-dev.yaml" that containing your confidential credentials in "fatplants_volume".
 
 6. Use the command "docker build -f Dockerfile.dev -t fastapi_fatplants ." to dockerize the project files.
 
