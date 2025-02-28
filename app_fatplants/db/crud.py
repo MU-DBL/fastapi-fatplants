@@ -157,10 +157,38 @@ async def get_details_by_uniprotid(species: str, uniprot_id: str):
 
 #for logging IP and counting visitors
 async def count_and_log_visitor(info: str):
-    query='SELECT count FROM visitor WHERE id = 0;'
+    #query='SELECT count FROM visitor WHERE id = 0;'
+    query='SELECT count FROM visitor;'
     res = await database_conn_obj.fetch_all(query)
+    res = [[res[j][i] for j in range(len(res))] for i in range(len(res[0]))]#transpose the result
+    #0: total count 1-12: count of each month(12: this month, 11: last month...) 13: month of last update
+
+    if res[0][13]!=datetime.now().month:#if it's a new month
+        offset=(datetime.now().month+12-res[0][13])%12
+        shift=res[0][1:13]+[0,0,0,0,0,0,0,0,0,0,0,0]
+        query1="""
+        UPDATE `fatplants`.`visitor` SET `count` = \'"""+str(shift[0+offset])+"""\' WHERE (`id` = \'1\');
+        UPDATE `fatplants`.`visitor` SET `count` = \'"""+str(shift[1+offset])+"""\' WHERE (`id` = \'2\');
+        UPDATE `fatplants`.`visitor` SET `count` = \'"""+str(shift[2+offset])+"""\' WHERE (`id` = \'3\');
+        UPDATE `fatplants`.`visitor` SET `count` = \'"""+str(shift[3+offset])+"""\' WHERE (`id` = \'4\');
+        UPDATE `fatplants`.`visitor` SET `count` = \'"""+str(shift[4+offset])+"""\' WHERE (`id` = \'5\');
+        UPDATE `fatplants`.`visitor` SET `count` = \'"""+str(shift[5+offset])+"""\' WHERE (`id` = \'6\');
+        UPDATE `fatplants`.`visitor` SET `count` = \'"""+str(shift[6+offset])+"""\' WHERE (`id` = \'7\');
+        UPDATE `fatplants`.`visitor` SET `count` = \'"""+str(shift[7+offset])+"""\' WHERE (`id` = \'8\');
+        UPDATE `fatplants`.`visitor` SET `count` = \'"""+str(shift[8+offset])+"""\' WHERE (`id` = \'9\');
+        UPDATE `fatplants`.`visitor` SET `count` = \'"""+str(shift[9+offset])+"""\' WHERE (`id` = \'10\');
+        UPDATE `fatplants`.`visitor` SET `count` = \'"""+str(shift[10+offset])+"""\' WHERE (`id` = \'11\');
+        UPDATE `fatplants`.`visitor` SET `count` = \'"""+str(shift[11+offset])+"""\' WHERE (`id` = \'12\');
+        UPDATE `fatplants`.`visitor` SET `count` = \'"""+str(datetime.now().month)+"""\' WHERE (`id` = \'13\');
+        """
+        await database_conn_obj.execute(query1)
+
+        res = await database_conn_obj.fetch_all(query)
+        res = [[res[j][i] for j in range(len(res))] for i in range(len(res[0]))]
+
     result=str(res[0][0]+1)
-    query2='UPDATE visitor SET count = \''+result+'\' WHERE id = \'0\';'
+    result_month=str(res[0][12]+1)
+    query2='UPDATE visitor SET count = \''+result+'\' WHERE id = \'0\';UPDATE visitor SET count = \''+result_month+'\' WHERE id = \'12\';'
     await database_conn_obj.execute(query2)
 
     year_month_str = f"{datetime.now().month:02d}{datetime.now().year % 100:02d}"
