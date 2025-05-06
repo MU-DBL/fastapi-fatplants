@@ -197,6 +197,12 @@ async def count_and_log_visitor(info: str):
     
     return result
 
+async def total_visitor_count():
+    query='SELECT count FROM visitor;'
+    res = await database_conn_obj.fetch_all(query)
+    result=str(res[0][0])
+    return result
+
 async def submit_record(record: ArabidopsisRecord):
     subcellular_location = record.subcellular_location_listed or record.subcellular_location_filled
     evidence_for_function = record.evidence_for_function_listed or record.evidence_for_function_filled
