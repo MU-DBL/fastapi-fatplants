@@ -4,6 +4,7 @@ from db.schemas import *
 from db.database import database_conn_obj
 from datetime import datetime
 import os
+import requests
 
 # def get_fpids_index(db:Session, species, expression):
 #     exp='%{e}%'.format(e=expression)
@@ -191,6 +192,36 @@ async def count_and_log_visitor(info: str):
     query2='UPDATE visitor SET count = \''+result+'\' WHERE id = \'0\';UPDATE visitor SET count = \''+result_month+'\' WHERE id = \'12\';'
     await database_conn_obj.execute(query2)
 
+    # Get IP address from info
+    ip_address = info.split()[0] if info else "Unknown"
+    
+    # Get geolocation data
+    try:
+        url = f"http://ip-api.com/json/{ip_address}"
+        response = requests.get(url, timeout=5)
+        data = response.json()
+        if data['status'] == 'success':
+            city = data['city']
+            country = data['country']
+        else:
+            city = "Unknown"
+            country = "Unknown"
+    except:
+        city = "Unknown"
+        country = "Unknown"
+
+    # Update location_based_visitor_count table
+    query3 = """
+    INSERT INTO location_based_visitor_count (ip_address, city, country, visitor_count)
+    VALUES (:ip, :city, :country, 1)
+    ON DUPLICATE KEY UPDATE visitor_count = visitor_count + 1
+    """
+    await database_conn_obj.execute(query3, values={
+        "ip": ip_address,
+        "city": city,
+        "country": country
+    })
+
     year_month_str = f"{datetime.now().month:02d}{datetime.now().year % 100:02d}"
     with open('fatplants_volume//counter_log//record_'+os.getenv('APP_ENV')+'_'+year_month_str+'.txt', 'a') as file:
         file.write(result+' '+info + '\n')
@@ -374,3 +405,32 @@ async def get_heho_locus(heho_id:str):
         res3=await database_conn_obj.fetch_all(query3)
         json_data.append(dict(zip(row_headers, [r.locus_id, r.abbrev, r.mutant, r.gene_identification_method, r.description_mutant_phenotype, r.gene, r.subcelles, r.evidence,r.comments, r.brem1, r.brem2, r.brem3, r.brem4, r.caen1, r.caen2, r.caen3, r.caen4, r.caem, r.euen1, r.euen2, r.euen3, r.euen4, r.euem, r.naem1, r.naem2, r.naem3, r.naem4 ,res2, res3])))
     return json_data
+
+async def get_monthly_hits():
+    try:
+        # Get the last 12 IDs from visitor table
+        query = """
+        SELECT id as month_id, count as hits 
+        FROM visitor 
+        WHERE id > 0
+        ORDER BY id DESC 
+        LIMIT 12;
+        """
+        res = await database_conn_obj.fetch_all(query)
+        # Reverse the results to get ascending order
+        return [{"month_id": row[0], "hits": row[1]} for row in reversed(res)]
+    except Exception as e:
+        raise Exception(f"Error fetching monthly hits: {str(e)}")
+
+async def get_location_hits():
+    try:
+        query = """
+        SELECT country, city, SUM(visitor_count) as hits 
+        FROM location_based_visitor_count 
+        GROUP BY country, city 
+        ORDER BY hits DESC;
+        """
+        res = await database_conn_obj.fetch_all(query)
+        return [{"country": row[0], "city": row[1], "hits": row[2]} for row in res]
+    except Exception as e:
+        raise Exception(f"Error fetching location hits: {str(e)}")
