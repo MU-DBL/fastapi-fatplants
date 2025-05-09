@@ -158,39 +158,58 @@ async def get_details_by_uniprotid(species: str, uniprot_id: str):
 
 #for logging IP and counting visitors
 async def count_and_log_visitor(info: str):
-    #query='SELECT count FROM visitor WHERE id = 0;'
-    query='SELECT count FROM visitor;'
-    res = await database_conn_obj.fetch_all(query)
-    res = [[res[j][i] for j in range(len(res))] for i in range(len(res[0]))]#transpose the result
-    #0: total count 1-12: count of each month(12: this month, 11: last month...) 13: month of last update
-
-    if res[0][13]!=datetime.now().month:#if it's a new month
-        offset=(datetime.now().month+12-res[0][13])%12
-        shift=res[0][1:13]+[0,0,0,0,0,0,0,0,0,0,0,0]
-        query1="""
-        UPDATE `fatplants`.`visitor` SET `count` = \'"""+str(shift[0+offset])+"""\' WHERE (`id` = \'1\');
-        UPDATE `fatplants`.`visitor` SET `count` = \'"""+str(shift[1+offset])+"""\' WHERE (`id` = \'2\');
-        UPDATE `fatplants`.`visitor` SET `count` = \'"""+str(shift[2+offset])+"""\' WHERE (`id` = \'3\');
-        UPDATE `fatplants`.`visitor` SET `count` = \'"""+str(shift[3+offset])+"""\' WHERE (`id` = \'4\');
-        UPDATE `fatplants`.`visitor` SET `count` = \'"""+str(shift[4+offset])+"""\' WHERE (`id` = \'5\');
-        UPDATE `fatplants`.`visitor` SET `count` = \'"""+str(shift[5+offset])+"""\' WHERE (`id` = \'6\');
-        UPDATE `fatplants`.`visitor` SET `count` = \'"""+str(shift[6+offset])+"""\' WHERE (`id` = \'7\');
-        UPDATE `fatplants`.`visitor` SET `count` = \'"""+str(shift[7+offset])+"""\' WHERE (`id` = \'8\');
-        UPDATE `fatplants`.`visitor` SET `count` = \'"""+str(shift[8+offset])+"""\' WHERE (`id` = \'9\');
-        UPDATE `fatplants`.`visitor` SET `count` = \'"""+str(shift[9+offset])+"""\' WHERE (`id` = \'10\');
-        UPDATE `fatplants`.`visitor` SET `count` = \'"""+str(shift[10+offset])+"""\' WHERE (`id` = \'11\');
-        UPDATE `fatplants`.`visitor` SET `count` = \'"""+str(shift[11+offset])+"""\' WHERE (`id` = \'12\');
-        UPDATE `fatplants`.`visitor` SET `count` = \'"""+str(datetime.now().month)+"""\' WHERE (`id` = \'13\');
+    # Get current month and year
+    current_month = datetime.now().month
+    current_year = datetime.now().year
+    current_timestamp = f"{current_month:02d}/{current_year}"
+    
+    # First, get the current total count
+    query_total = 'SELECT count FROM visitor WHERE id = 0;'
+    total_count_result = await database_conn_obj.fetch_all(query_total)
+    total_count = total_count_result[0][0] if total_count_result else 0
+    
+    # Get the highest month id to determine where to add the new month
+    query_max_id = 'SELECT MAX(id) FROM visitor WHERE id > 0;'
+    max_id_result = await database_conn_obj.fetch_all(query_max_id)
+    max_id = max_id_result[0][0] if max_id_result[0][0] is not None else 0
+    
+    # Check if we need to add a new month entry
+    # Modified query to check both count and timestamp
+    query_current_month = f"""
+        SELECT id, count, timestamp 
+        FROM visitor 
+        WHERE id = {max_id} 
+        AND timestamp IS NOT NULL;
+    """
+    current_month_result = await database_conn_obj.fetch_all(query_current_month)
+    
+    # Check if the current month's timestamp matches our timestamp
+    if not current_month_result or current_month_result[0][2] != current_timestamp:
+        # This is a new month, create a new entry
+        new_month_id = max_id + 1
+        query_new_month = f"""
+            INSERT INTO visitor (id, count, timestamp) 
+            VALUES ({new_month_id}, 1, :timestamp);
         """
-        await database_conn_obj.execute(query1)
-
-        res = await database_conn_obj.fetch_all(query)
-        res = [[res[j][i] for j in range(len(res))] for i in range(len(res[0]))]
-
-    result=str(res[0][0]+1)
-    result_month=str(res[0][12]+1)
-    query2='UPDATE visitor SET count = \''+result+'\' WHERE id = \'0\';UPDATE visitor SET count = \''+result_month+'\' WHERE id = \'12\';'
-    await database_conn_obj.execute(query2)
+        await database_conn_obj.execute(query_new_month, values={"timestamp": current_timestamp})
+    else:
+        # Update the current month's count
+        new_month_id = max_id
+        current_count = current_month_result[0][1]
+        query_update_month = f"""
+            UPDATE visitor 
+            SET count = {current_count + 1} 
+            WHERE id = {new_month_id};
+        """
+        await database_conn_obj.execute(query_update_month)
+    
+    # Update the total count
+    query_update_total = f'UPDATE visitor SET count = {total_count + 1} WHERE id = 0;'
+    await database_conn_obj.execute(query_update_total)
+    
+    # Initialize result with the new total count after increment
+    result = str(total_count + 1)
+    
 
     # Get IP address from info
     ip_address = info.split()[0] if info else "Unknown"
