@@ -118,6 +118,12 @@ async def count_and_log_visitor(info: str):
     res=await crud.count_and_log_visitor(info)
     return res
 
+#return total visitor count only
+@router.get('/api/count/')
+async def count_and_log_visitor():
+    res=await crud.total_visitor_count()
+    return res
+
 @router.get('/api/enzyme_search/')
 async def search_Enzyme(query: str):
     if is_sql_injection(query, True):
