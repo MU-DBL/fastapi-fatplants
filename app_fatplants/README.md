@@ -14,11 +14,11 @@
 
 # To serve API in Docker:
 `docker build -t fastapi_fatplants.v1 .`
-`docker run -d -v fatplants_volume:/app/fatplants_volume -p 5000:5000 --network=host fastapi_fatplants.v1`
+`docker run -d -v /home/fatplants_volume:/app/fatplants_volume -p 5000:5000 --network=host fastapi_fatplants.v1`
 
 # For dev:
 `docker build -f Dockerfile.dev -t fastapi_fatplants .`
-`docker run -d -v fatplants_volume:/app/fatplants_volume -p 5004:5004 --network=host fastapi_fatplants`
+`docker run -d -v /home/fatplants_volume:/app/fatplants_volume -p 5004:5004 --network=host fastapi_fatplants`
 
 # Renew of SSL certificates
     - Usually certificates are automatically renewed every two months in their respective path
@@ -27,5 +27,8 @@
     - Cronjob uses shell script "ssl_certs_copy.sh" in /home directory.
     - EDIT the file "ssl_certs_copy.sh" and "sudo cronjob" to change the variables as per the user and their paths.
 
+# Server permission issue:
+lsof -i :5000
+kill PID
 
 
